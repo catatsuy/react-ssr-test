@@ -1,20 +1,14 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM, { render } from 'react-dom';
+import { Router, browserHistory } from 'react-router'
 import Main from './components/Main';
 import Leaf from './components/Leaf';
+import routes from './routes';
 
 const appElem = document.getElementById('app');
 const json = appElem.dataset.initialProps;
 const initialProps = JSON.parse(json);
 
-if (location.pathname === '/') {
-  ReactDOM.render(
-    <Main {...initialProps} />
-    , appElem
-  );
-} else if (location.pathname === '/leaf') {
-  ReactDOM.render(
-    <Leaf {...initialProps} />
-    , appElem
-  );
-}
+render((
+  <Router history={browserHistory} routes={routes} />
+), appElem)

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router';
 
 class Main extends React.Component {
   constructor(props) {
@@ -30,7 +31,7 @@ class Main extends React.Component {
         <header>
           <h1><a href="/">React SSR Sample</a></h1>
           <p>{this.state.info}</p>
-          <a href="/leaf">leaf</a>
+          <Link to="/leaf">leaf</Link>
         </header>
       </div>
     );
