@@ -2,6 +2,9 @@ var path = require('path');
 //var webpack = require('webpack');
 
 module.exports = {
+  resolve: {
+    extensions: ['', '.js', '.jsx']
+  },
   entry: './browser.js',
   output: { path: path.join(__dirname, 'public'), filename: 'bundle.js' },
   module: {
