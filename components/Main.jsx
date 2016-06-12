@@ -1,10 +1,10 @@
 import React from 'react';
 
-export default class Main extends React.Component {
+class Main extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      info: 'loading ... ',
+      info: props.time ? props.time : 'loading ... ',
     };
   }
 
@@ -31,3 +31,9 @@ export default class Main extends React.Component {
     );
   }
 }
+
+Main.propTypes = {
+  time: React.PropTypes.number,
+};
+
+export default Main;
