@@ -4,13 +4,25 @@ import React from 'react';
 import { renderToString } from 'react-dom/server';
 import Main from './components/Main';
 import fetch from 'node-fetch';
+import escape from 'escape-html';
 
 const app = express();
 
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('*', (req, res) => {
-  createHtml().then((html) => res.send(html));
+  fetch('http://localhost:9901/api.php')
+  .then((result) => result.json())
+  .then((json) => {
+    const initialProps = { time: json.time };
+    const appHtml = renderToString(
+      <Main {...initialProps}/>
+    );
+    res.send(createHtml(appHtml, initialProps));
+  })
+  .catch((err) => {
+    res.status(500).send(error.message);
+  });
 });
 
 const PORT = process.env.PORT || 9900;
@@ -18,26 +30,15 @@ app.listen(PORT, () => {
   console.log('Production Express server running at localhost:' + PORT);
 });
 
-function createHtml() {
-  return fetch('http://localhost:9901/api.php')
-  .then((result) => result.json())
-  .then((json) => {
-    const initialProps = { time: json.time };
-    const appHtml = renderToString(
-      <Main {...initialProps}/>
-    );
-    return `<!DOCTYPE html>
+function createHtml(appHtml, initialProps) {
+  return `<!DOCTYPE html>
 <html>
   <head>
     <title>SSR Sample</title>
   </head>
   <body>
-    <div id="app">${appHtml}</div>
+    <div id="app" data-initial-props="${escape(JSON.stringify(initialProps))}">${appHtml}</div>
     <script src="/bundle.js"></script>
   </body>
 </html>`;
-  })
-  .catch((err) => {
-    console.log(err);
-  });
 }

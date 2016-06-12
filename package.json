@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/catatsuy/react-ssr-test#readme",
   "dependencies": {
+    "escape-html": "^1.0.3",
     "express": "^4.13.4",
     "node-fetch": "^1.5.3",
     "react": "^15.1.0",

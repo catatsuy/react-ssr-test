@@ -9,7 +9,9 @@ class Main extends React.Component {
   }
 
   componentDidMount() {
-    this.getInfo();
+    if (this.state.info === 'loading ... ') {
+      this.getInfo();
+    }
   }
 
   getInfo() {
