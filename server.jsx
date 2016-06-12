@@ -3,6 +3,7 @@ import path from 'path';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import Main from './components/Main';
+import Leaf from './components/Leaf';
 import fetch from 'node-fetch';
 import escape from 'escape-html';
 
@@ -12,7 +13,7 @@ const app = express();
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('*', (req, res) => {
+app.get('/', (req, res) => {
   fetch(`${api}/csrf_token`)
   .then((result) => result.json())
   .then((tokenResponse) => {
@@ -27,6 +28,21 @@ app.get('*', (req, res) => {
       );
       res.send(createHtml(appHtml, initialProps));
     })
+  })
+  .catch((err) => {
+    res.status(500).send(err.message);
+  });
+});
+
+app.get('/leaf', (req, res) => {
+  fetch(`${api}/csrf_token`)
+  .then((result) => result.json())
+  .then((tokenResponse) => {
+    const initialProps = { csrfToken: tokenResponse.token };
+    const appHtml = renderToString(
+      <Leaf {...initialProps}/>
+    );
+    res.send(createHtml(appHtml, initialProps));
   })
   .catch((err) => {
     res.status(500).send(err.message);

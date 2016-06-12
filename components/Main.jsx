@@ -30,6 +30,7 @@ class Main extends React.Component {
         <header>
           <h1><a href="/">React SSR Sample</a></h1>
           <p>{this.state.info}</p>
+          <a href="/leaf">leaf</a>
         </header>
       </div>
     );
