@@ -8,7 +8,7 @@ API -> Node (React SSR) -> User
 Express web server.
 
 ```
-$(npm bin)/babel-node server.js
+$(npm bin)/babel-node server.jsx
 ```
 
 # Assets
