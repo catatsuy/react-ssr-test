@@ -1,10 +1,11 @@
 import React from 'react';
+import { Link } from 'react-router';
 
 function Leaf() {
   return (
     <div className="leaf">
       <header>
-        <h1><a href="/">React SSR Sample</a></h1>
+        <h1><Link to="/">React SSR Sample</Link></h1>
         <p>this is leaf!</p>
       </header>
     </div>
