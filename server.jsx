@@ -2,19 +2,19 @@ import express from 'express';
 import path from 'path';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
-import Main from './components/Main';
-import Leaf from './components/Leaf';
 import escape from 'escape-html';
 import { match, RouterContext } from 'react-router';
 import routes from './routes';
-import AsyncProps, { loadPropsOnServer } from 'async-props'
+import AsyncProps, { loadPropsOnServer } from 'async-props';
 import fetch from 'isomorphic-fetch';
+import proxy from 'http-proxy-middleware';
 
-const api = 'http://localhost:9901';
+const apiEndpoint = 'http://localhost:9901';
 
 const app = express();
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/api/*', proxy({target: apiEndpoint, changeOrigin: true}));
 
 app.get('*', (req, res) => {
   // https://github.com/reactjs/react-router/blob/master/docs/guides/ServerRendering.md
@@ -26,11 +26,11 @@ app.get('*', (req, res) => {
       res.redirect(302, redirectLocation.pathname + redirectLocation.search);
     } else if (renderProps) {
 
-      fetch(`${api}/csrf_token`)
+      fetch(`${apiEndpoint}/api/csrf_token`)
       .then((result) => result.json())
       .then((json) => {
         const csrfToken = json.token;
-        const loadContext = {api, csrfToken};
+        const loadContext = {apiEndpoint, csrfToken};
 
         // https://github.com/ryanflorence/async-props
         loadPropsOnServer(renderProps, loadContext, (err, asyncProps, scriptTag) => {

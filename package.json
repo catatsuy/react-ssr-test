@@ -20,6 +20,7 @@
     "async-props": "^0.3.2",
     "escape-html": "^1.0.3",
     "express": "^4.13.4",
+    "http-proxy-middleware": "^0.15.2",
     "isomorphic-fetch": "^2.2.1",
     "react": "^15.1.0",
     "react-dom": "^15.1.0",
