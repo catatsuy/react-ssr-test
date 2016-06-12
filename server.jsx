@@ -6,22 +6,30 @@ import Main from './components/Main';
 import fetch from 'node-fetch';
 import escape from 'escape-html';
 
+const api = 'http://localhost:9901';
+
 const app = express();
 
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('*', (req, res) => {
-  fetch('http://localhost:9901/api.php')
+  fetch(`${api}/csrf_token`)
   .then((result) => result.json())
-  .then((json) => {
-    const initialProps = { time: json.time };
-    const appHtml = renderToString(
-      <Main {...initialProps}/>
-    );
-    res.send(createHtml(appHtml, initialProps));
+  .then((tokenResponse) => {
+    return fetch(`${api}/time`, {
+      headers: { 'x-csrf-token': tokenResponse.token },
+    })
+    .then((result) => result.json())
+    .then((timeResponse) => {
+      const initialProps = { csrfToken: tokenResponse.token, time: timeResponse.time };
+      const appHtml = renderToString(
+        <Main {...initialProps}/>
+      );
+      res.send(createHtml(appHtml, initialProps));
+    })
   })
   .catch((err) => {
-    res.status(500).send(error.message);
+    res.status(500).send(err.message);
   });
 });
 

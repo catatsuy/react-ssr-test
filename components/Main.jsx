@@ -15,7 +15,9 @@ class Main extends React.Component {
   }
 
   getInfo() {
-    fetch('http://localhost:9901/api.php')
+    fetch('http://localhost:9901/time', {
+      headers: { 'x-csrf-token': this.props.csrfToken },
+    })
     .then((result) => result.json())
     .then((res) => {
       this.setState({ info: res.time });
@@ -36,6 +38,7 @@ class Main extends React.Component {
 
 Main.propTypes = {
   time: React.PropTypes.number,
+  csrfToken: React.PropTypes.string.isRequired,
 };
 
 export default Main;
