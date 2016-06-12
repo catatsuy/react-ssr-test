@@ -1,5 +1,3 @@
-/* eslint react/no-did-mount-set-state: 0 */
-
 import React from 'react';
 
 export default class Main extends React.Component {
@@ -11,7 +9,15 @@ export default class Main extends React.Component {
   }
 
   componentDidMount() {
-    this.setState({ info: 'loaded!' });
+    this.getInfo();
+  }
+
+  getInfo() {
+    fetch('http://localhost:9901/api.php')
+    .then((result) => result.json())
+    .then((res) => {
+      this.setState({ info: res.time });
+    });
   }
 
   render() {
