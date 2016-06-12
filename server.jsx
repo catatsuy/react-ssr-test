@@ -6,6 +6,8 @@ import Main from './components/Main';
 import Leaf from './components/Leaf';
 import fetch from 'node-fetch';
 import escape from 'escape-html';
+import { match, RouterContext } from 'react-router';
+import routes from './routes';
 
 const api = 'http://localhost:9901';
 
@@ -13,39 +15,19 @@ const app = express();
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/', (req, res) => {
-  fetch(`${api}/csrf_token`)
-  .then((result) => result.json())
-  .then((tokenResponse) => {
-    return fetch(`${api}/time`, {
-      headers: { 'x-csrf-token': tokenResponse.token },
-    })
-    .then((result) => result.json())
-    .then((timeResponse) => {
-      const initialProps = { csrfToken: tokenResponse.token, time: timeResponse.time };
-      const appHtml = renderToString(
-        <Main {...initialProps}/>
-      );
-      res.send(createHtml(appHtml, initialProps));
-    })
-  })
-  .catch((err) => {
-    res.status(500).send(err.message);
-  });
-});
-
-app.get('/leaf', (req, res) => {
-  fetch(`${api}/csrf_token`)
-  .then((result) => result.json())
-  .then((tokenResponse) => {
-    const initialProps = { csrfToken: tokenResponse.token };
-    const appHtml = renderToString(
-      <Leaf {...initialProps}/>
-    );
-    res.send(createHtml(appHtml, initialProps));
-  })
-  .catch((err) => {
-    res.status(500).send(err.message);
+app.get('*', (req, res) => {
+  // https://github.com/reactjs/react-router/blob/master/docs/guides/ServerRendering.md
+  match({ routes, location: req.url }, (err, redirectLocation, renderProps) => {
+    if (err) {
+      console.error(err)
+      res.status(500).send(err.message);
+    } else if (redirectLocation) {
+      res.redirect(302, redirectLocation.pathname + redirectLocation.search);
+    } else if (renderProps) {
+      res.status(200).send(renderToString(<RouterContext {...renderProps} />));
+    } else {
+      res.status(404).send('Not found')
+    }
   });
 });
 
