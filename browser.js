@@ -7,5 +7,9 @@ import AsyncProps from 'async-props';
 const appElem = document.getElementById('app');
 
 render((
-  <Router history={browserHistory} routes={routes} render={(props) => <AsyncProps {...props} />} />
+  <Router
+    history={browserHistory}
+    routes={routes}
+    render={(props) => <AsyncProps {...props} />}
+  />
 ), appElem);
