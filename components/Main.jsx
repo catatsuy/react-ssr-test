@@ -2,26 +2,13 @@ import React from 'react';
 import { Link } from 'react-router';
 
 class Main extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      info: props.time ? props.time : 'loading ... ',
-    };
-  }
-
-  componentDidMount() {
-    if (this.state.info === 'loading ... ') {
-      this.getInfo();
-    }
-  }
-
-  getInfo() {
+  static loadProps(params, cb) {
     fetch('http://localhost:9901/time', {
-      headers: { 'x-csrf-token': this.props.csrfToken },
+      // headers: { 'x-csrf-token': this.props.csrfToken },
     })
     .then((result) => result.json())
     .then((res) => {
-      this.setState({ info: res.time });
+      cb(null, { info: res.time });
     });
   }
 
@@ -30,7 +17,7 @@ class Main extends React.Component {
       <div className="main">
         <header>
           <h1><a href="/">React SSR Sample</a></h1>
-          <p>{this.state.info}</p>
+          <p>{this.props.info}</p>
           <Link to="/leaf">leaf</Link>
         </header>
       </div>
@@ -38,9 +25,9 @@ class Main extends React.Component {
   }
 }
 
-Main.propTypes = {
-  time: React.PropTypes.number,
-  csrfToken: React.PropTypes.string.isRequired,
-};
+// Main.propTypes = {
+//   time: React.PropTypes.number,
+//   csrfToken: React.PropTypes.string.isRequired,
+// };
 
 export default Main;
