@@ -8,8 +8,9 @@ import escape from 'escape-html';
 import { match, RouterContext } from 'react-router';
 import routes from './routes';
 import AsyncProps, { loadPropsOnServer } from 'async-props'
+import fetch from 'isomorphic-fetch';
 
-// const api = 'http://localhost:9901';
+const api = 'http://localhost:9901';
 
 const app = express();
 
@@ -25,18 +26,31 @@ app.get('*', (req, res) => {
       res.redirect(302, redirectLocation.pathname + redirectLocation.search);
     } else if (renderProps) {
 
-      // https://github.com/ryanflorence/async-props
-      loadPropsOnServer(renderProps, {}, (err, asyncProps, scriptTag) => {
-        if (err) {
-          console.error(err)
-          res.status(500).send(err.message);
-        } else {
-          const appHTML = renderToString(
-            <AsyncProps {...renderProps} {...asyncProps} />
-          )
-          const html = createHtml(appHTML, scriptTag)
-          res.send(html)
-        }
+      fetch(`${api}/csrf_token`)
+      .then((result) => result.json())
+      .then((json) => {
+        const csrfToken = json.token;
+        const loadContext = {api, csrfToken};
+
+        // https://github.com/ryanflorence/async-props
+        loadPropsOnServer(renderProps, loadContext, (err, asyncProps, scriptTag) => {
+          if (err) {
+            console.error(err)
+            res.status(500).send(err.message);
+          } else {
+            const appHTML = renderToString(
+              <AsyncProps {...renderProps} {...asyncProps} />
+            );
+
+            const html = createHtml(appHTML, scriptTag, csrfToken);
+
+            res.status(200).send(html);
+          }
+        });
+
+      })
+      .catch((err) => {
+        res.status(500).send(err.message);
       })
     } else {
       res.status(404).send('Not found')
@@ -49,9 +63,9 @@ app.listen(PORT, () => {
   console.log('Production Express server running at localhost:' + PORT);
 });
 
-function createHtml(appHtml, scriptTag) {
+function createHtml(appHtml, scriptTag, csrfToken) {
   return `<!DOCTYPE html>
-<html>
+<html data-csrf-token="${escape(csrfToken)}">
   <head>
     <title>SSR Sample</title>
   </head>

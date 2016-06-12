@@ -14,7 +14,6 @@ function Main({ children }) {
 
 Main.propTypes = {
   children: React.PropTypes.object,
-  // csrfToken: React.PropTypes.string.isRequired,
 };
 
 export default Main;

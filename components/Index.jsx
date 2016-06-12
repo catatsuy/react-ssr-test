@@ -4,8 +4,9 @@ import fetch from 'isomorphic-fetch';
 
 class Index extends React.Component {
   static loadProps(params, cb) {
+    const csrfToken = params.loadContext ? params.loadContext.csrfToken : window.csrfToken;
     fetch('http://localhost:9901/time', {
-      // headers: { 'x-csrf-token': this.props.csrfToken },
+      headers: { 'x-csrf-token': csrfToken },
     })
     .then((result) => result.json())
     .then((res) => {
@@ -25,7 +26,6 @@ class Index extends React.Component {
 
 Index.propTypes = {
   time: React.PropTypes.number,
-  // csrfToken: React.PropTypes.string.isRequired,
 };
 
 export default Index;

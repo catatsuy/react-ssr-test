@@ -4,6 +4,8 @@ import { Router, browserHistory } from 'react-router';
 import routes from './routes';
 import AsyncProps from 'async-props';
 
+window.csrfToken = document.documentElement.dataset.csrfToken;
+
 const appElem = document.getElementById('app');
 
 render((
